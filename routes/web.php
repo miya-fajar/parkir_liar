@@ -10,6 +10,12 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+Route::view('car', 'car')
+    ->middleware(['auth', 'verified'])
+    ->name('car');
+Route::view('motorcycle', 'motorcycle')
+    ->middleware(['auth', 'verified'])
+    ->name('motorcycle');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
