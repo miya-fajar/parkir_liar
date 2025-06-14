@@ -26,6 +26,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-Route::post("/data/create", [DataController::class, "create"]);
-
 require __DIR__ . '/auth.php';

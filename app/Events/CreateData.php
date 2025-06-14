@@ -10,6 +10,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class CreateData implements ShouldBroadcast
 {
@@ -18,7 +19,10 @@ class CreateData implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public Data $data) {}
+    public function __construct(public Data $data)
+    {
+        Log::info('CreateData broadcasted', ['data_id' => $data->id]);
+    }
 
     /**
      * Get the channels the event should broadcast on.
