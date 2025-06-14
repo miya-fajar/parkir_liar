@@ -1,7 +1,6 @@
 <x-layouts.app :title="__('Dashboard')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <!-- Donut Chart Motor vs Mobil -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
                 <div class="p-4 text-sm">
@@ -18,12 +17,28 @@
             </div>
 
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
+                <!-- Gambar pelanggaran terbaru Motor -->
+                <img src="{{ asset('storage/' . $latestMotor->image) }}" alt="Pelanggaran Motor Terbaru"
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
+                <!-- Overlay informasi pelanggaran -->
+                <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
+                    <p class="font-semibold">{{ $latestMotor->jenis_kendaraan }}</p>
+                    <p>{{ \Carbon\Carbon::parse($latestMotor->waktu_pelanggaran)->format('d M Y H:i') }}</p>
+                </div>
             </div>
 
-
+            <!-- Card Pelanggaran Terbaru Mobil -->
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
+                <!-- Gambar pelanggaran terbaru Mobil -->
+                <img src="{{ asset('storage/' . $latestMobil->image) }}" alt="Pelanggaran Mobil Terbaru"
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
+                <!-- Overlay informasi pelanggaran -->
+                <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
+                    <p class="font-semibold">{{ $latestMobil->jenis_kendaraan }}</p>
+                    <p>{{ \Carbon\Carbon::parse($latestMobil->waktu_pelanggaran)->format('d M Y H:i') }}</p>
+                </div>
             </div>
         </div>
 

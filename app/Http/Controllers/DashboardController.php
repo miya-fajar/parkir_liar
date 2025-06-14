@@ -44,12 +44,23 @@ class DashboardController extends Controller
         $labelsDates = array_keys($countsByDate);    // contoh: ['2025-05-15', '2025-05-16', ...]
         $dataDates   = array_values($countsByDate);  // contoh: [5, 3, 0, 7, ...] (jumlah per hari)
 
+
+                $latestMotor = Pelanggaran::where('jenis_kendaraan', 'Motor')
+                        ->orderBy('waktu_pelanggaran', 'desc')
+                        ->first();
+
+        // Query pelanggaran terbaru untuk Mobil
+        $latestMobil = Pelanggaran::where('jenis_kendaraan', 'Mobil')
+                        ->orderBy('waktu_pelanggaran', 'desc')
+                        ->first();
         // Passing data ke view dashboard
         return view('dashboard', [
             'labelsJenis' => $labelsJenis,
             'dataJenis'   => $dataJenis,
             'labelsDates' => $labelsDates,
-            'dataDates'   => $dataDates
+            'dataDates'   => $dataDates,
+                        'latestMotor' => $latestMotor,
+            'latestMobil' => $latestMobil,
         ]);
     }
 }
