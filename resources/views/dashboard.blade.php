@@ -40,13 +40,13 @@
         <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Donut Chart
-            var optionsDonut = {
-                chart: { type: 'donut' },
-                series: [120, 80],
-                labels: ['Motor', 'Mobil']
-            };
-            var chartDonut = new ApexCharts(document.querySelector("#chartMotorMobil"), optionsDonut);
-            chartDonut.render();
+    var optionsDonut = {
+        chart: { type: 'donut' },
+        series: [{{ $motorCount ?? 0 }}, {{ $mobilCount ?? 0 }}],
+        labels: ['Motor', 'Mobil']
+    };
+    var chartDonut = new ApexCharts(document.querySelector("#chartMotorMobil"), optionsDonut);
+    chartDonut.render();
 
             // Bar Chart
             var optionsBar = {

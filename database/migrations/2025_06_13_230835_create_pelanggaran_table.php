@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('pelanggaran', function (Blueprint $table) {
             $table->id();
-                        $table->string('jenis_kendaraan');       // Tambahan: Jenis kendaraan
-            $table->timestamp('waktu_pelanggaran');  // Tambahan: Waktu pelanggaran
-            $table->string('image');                 // Tambahan: Path gambar bukti
+            $table->string('jenis_kendaraan');
+            $table->timestamp('waktu_pelanggaran');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
