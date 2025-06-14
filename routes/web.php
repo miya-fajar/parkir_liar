@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use Illuminate\Http\Request;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PelanggaranController;
 
 Route::get('/', function () {
     return view('welcome');
