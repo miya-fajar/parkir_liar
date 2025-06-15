@@ -59,7 +59,7 @@ class DashboardController extends Controller
             'dataJenis'   => $dataJenis,
             'labelsDates' => $labelsDates,
             'dataDates'   => $dataDates,
-                        'latestMotor' => $latestMotor,
+            'latestMotor' => $latestMotor,
             'latestMobil' => $latestMobil,
         ]);
     }

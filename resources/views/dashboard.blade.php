@@ -2,59 +2,112 @@
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <div class="p-4 text-sm">
-                    <h4 class="font-semibold mb-2">Parking Violation Detection Test:</h4>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li>Car (12 cases)</li>
-                        <li>Motorcycle (8 cases)</li>
+                class="relative aspect-video overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-lg bg-white dark:bg-neutral-900">
+                <div class="p-6 flex flex-col justify-center h-full">
+                    <h2 class="text-2xl font-extrabold mb-4 text-neutral-800 dark:text-white tracking-tight">Parking
+                        Violation Detection Test</h2>
+                    <ul class="list-disc pl-6 space-y-1 mb-6">
+                        @foreach ($labelsJenis as $i => $jenis)
+                            @php
+                                // Ubah label sesuai permintaan
+                                $displayJenis = $jenis;
+                                if (strtolower($jenis) === 'motor') {
+                                    $displayJenis = 'Motorcycle';
+                                }
+                                if (strtolower($jenis) === 'mobil') {
+                                    $displayJenis = 'Car';
+                                }
+                            @endphp
+                            <li class="text-base text-neutral-600 dark:text-neutral-300 font-medium">
+                                {{ $displayJenis }}
+                                <span class="font-bold text-neutral-800 dark:text-white">
+                                    ({{ $dataJenis[$i] }} cases)
+                                </span>
+                            </li>
+                        @endforeach
                     </ul>
-                    <h4 class="font-semibold mt-4 mb-2">Location of Parking Violation Detection Test:</h4>
-                    <p>Jl. Siliwangi, Pelabuhan Ratu, Sukabumi</p>
-                    <h4 class="font-semibold mt-4 mb-2">Violation Detection Test Hours:</h4>
-                    <p>09:00 AM - 08:00 PM (WIB)</p>
+
+                    <h3 class="text-lg font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test Location</h3>
+                    <p class="text-base text-neutral-600 dark:text-neutral-300 mb-4">Jl. Siliwangi, Pelabuhan Ratu,
+                        Sukabumi</p>
+                    <h3 class="text-lg font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test Hours</h3>
+                    <p class="text-base text-neutral-600 dark:text-neutral-300">09:00 AM - 08:00 PM <span
+                            class="font-medium">(WIB)</span></p>
                 </div>
             </div>
 
+            <!-- Latest Motorcycle Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <!-- Gambar pelanggaran terbaru Motor -->
-                <img src="{{ asset('storage/' . $latestMotor->image) }}" alt="Pelanggaran Motor Terbaru"
+                <!-- Latest Motorcycle Violation Image -->
+                <img src="{{ asset('storage/' . $latestMotor->image) }}" alt="Latest Motorcycle Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <!-- Overlay informasi pelanggaran -->
+                <!-- Violation info overlay -->
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
-                    <p class="font-semibold">{{ $latestMotor->jenis_kendaraan }}</p>
-                    <p>{{ \Carbon\Carbon::parse($latestMotor->waktu_pelanggaran)->format('d M Y H:i') }}</p>
+                    <p class="font-semibold">
+                        @php
+                            $label = $latestMotor->jenis_kendaraan;
+                            if (strtolower($label) === 'motor') {
+                                $label = 'Motorcycle';
+                            }
+                        @endphp
+                        {{ $label }}
+                    </p>
+                    <p>{{ \Carbon\Carbon::parse($latestMotor->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
                 </div>
             </div>
 
-            <!-- Card Pelanggaran Terbaru Mobil -->
+            <!-- Latest Car Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <!-- Gambar pelanggaran terbaru Mobil -->
-                <img src="{{ asset('storage/' . $latestMobil->image) }}" alt="Pelanggaran Mobil Terbaru"
+                <!-- Latest Car Violation Image -->
+                <img src="{{ asset('storage/' . $latestMobil->image) }}" alt="Latest Car Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <!-- Overlay informasi pelanggaran -->
+                <!-- Violation info overlay -->
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
-                    <p class="font-semibold">{{ $latestMobil->jenis_kendaraan }}</p>
-                    <p>{{ \Carbon\Carbon::parse($latestMobil->waktu_pelanggaran)->format('d M Y H:i') }}</p>
+                    <p class="font-semibold">
+                        @php
+                            $label = $latestMobil->jenis_kendaraan;
+                            if (strtolower($label) === 'mobil') {
+                                $label = 'Car';
+                            }
+                        @endphp
+                        {{ $label }}
+                    </p>
+                    <p>{{ \Carbon\Carbon::parse($latestMobil->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
                 </div>
             </div>
+
         </div>
 
         <!-- Chart Perbandingan Motor vs Mobil -->
         <div class="flex w-full flex-col gap-4">
-            <!-- Grid 2 kolom untuk 2 chart utama -->
-            <div class="grid gap-4 md:grid-cols-2">
-                <!-- Card Donut Chart Jenis Kendaraan -->
+            <!-- Grid 2 kolom dengan proporsi 1/3 dan 2/3 -->
+            <div class="grid gap-4 md:grid-cols-3">
+                <!-- Card Donut Chart Jenis Kendaraan (1/3 kolom) -->
                 <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                    <div id="chartMotorMobil" class="absolute inset-0"></div>
+                    class="relative aspect-video rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow bg-white dark:bg-neutral-900 md:col-span-1 flex items-center">
+                    <div class="w-full rounded-xl shadow-sm p-4">
+                        <div class="flex justify-between">
+                            <div class="flex justify-center items-center">
+                                <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">
+                                    Parking Violations
+                                </h5>
+                            </div>
+                        </div>
+                        <div id="chartMotorMobil" class="mt-4"></div>
+                        <div class="mt-6">
+                            <ul id="jenisList" class="space-y-2">
+                                <!-- Detail jenis kendaraan akan diisi via JS -->
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <!-- Card Grafik Pelanggaran 30 Hari Terakhir -->
+
+                <!-- Card Grafik Pelanggaran 30 Hari Terakhir (2/3 kolom) -->
                 <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                    <div id="chartDaily" class="absolute inset-0"></div>
+                    class="relative aspect-video rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow bg-white dark:bg-neutral-900 md:col-span-2 flex items-center">
+                    <div id="chartDaily" class="w-full h-full"></div>
                 </div>
             </div>
         </div>
@@ -64,16 +117,75 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Konfigurasi Donut Chart (Jenis Kendaraan)
-            var optionsDonut = {
+
+            // Donut chart dengan label otomatis putih jika dark
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const labelColor = isDark ? '#fff' : '#222';
+
+            const getDonutChartOptions = () => ({
+                series: @json($dataJenis),
+                labels: @json($labelsJenis),
+                colors: ["#6366f1", "#f59e42", "#10b981", "#f43f5e", "#64748b"],
                 chart: {
-                    type: 'donut'
+                    height: 320,
+                    width: "100%",
+                    type: "donut",
                 },
-                labels: @json($labelsJenis), // label jenis kendaraan (contoh: ["Motor","Mobil"])
-                series: @json($dataJenis) // data jumlah per jenis (contoh: [120, 80])
-            };
-            var chartDonut = new ApexCharts(document.querySelector("#chartMotorMobil"), optionsDonut);
-            chartDonut.render();
+                stroke: {
+                    colors: ["transparent"]
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "80%",
+                            labels: {
+                                show: true,
+                                name: {
+                                    show: true,
+                                    fontFamily: "Inter, sans-serif",
+                                    offsetY: 20,
+                                    color: labelColor
+                                },
+                                total: {
+                                    showAlways: true,
+                                    show: true,
+                                    fontFamily: "Inter, sans-serif",
+                                    label: "Total",
+                                    color: labelColor,
+                                    formatter: function(w) {
+                                        const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                        return sum + " Violations"
+                                    },
+                                },
+                                value: {
+                                    show: true,
+                                    fontFamily: "Inter, sans-serif",
+                                    offsetY: -20,
+                                    color: labelColor,
+                                    formatter: function(value) {
+                                        return value + " Violations"
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                legend: {
+                    position: "bottom",
+                    fontFamily: "Inter, sans-serif",
+                    labels: {
+                        colors: labelColor
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+            });
+
+            if (document.getElementById("chartMotorMobil") && typeof ApexCharts !== 'undefined') {
+                const chart = new ApexCharts(document.getElementById("chartMotorMobil"), getDonutChartOptions());
+                chart.render();
+            }
 
             // Konfigurasi Line/Bar Chart (Pelanggaran 30 Hari Terakhir)
             var optionsLine = {
