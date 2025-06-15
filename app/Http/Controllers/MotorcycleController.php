@@ -9,9 +9,9 @@ class MotorcycleController extends Controller
 {
     public function index()
     {
-        $motorViolations = Pelanggaran::where('jenis_kendaraan', 'Motor')
-                ->orderBy('waktu_pelanggaran', 'desc')
-                ->paginate(10, ['*'], 'motor_page');
+        $motorViolations = Pelanggaran::where('jenis_kendaraan', 'motor')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'motor_page');
 
 
         return view('motorcycle', ['motorViolations' => $motorViolations]);

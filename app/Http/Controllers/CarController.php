@@ -9,9 +9,9 @@ class CarController extends Controller
 {
     public function index()
     {
-        $carViolations   = Pelanggaran::where('jenis_kendaraan', 'Mobil')
-                ->orderBy('waktu_pelanggaran', 'desc')
-                ->paginate(10, ['*'], 'car_page');
+        $carViolations   = Pelanggaran::where('jenis_kendaraan', 'mobil')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'car_page');
         return view('car', ['carViolations' => $carViolations]);
     }
 }

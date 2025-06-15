@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Pelanggaran extends Model
 {
     use HasFactory;
-    protected $table = 'pelanggaran';  // Nama tabel di database
-    protected $fillable = ['jenis_kendaraan', 'waktu_pelanggaran', 'image'];
+    protected $table = 'pelanggaran';
+    protected $fillable = ['jenis_kendaraan',  'image'];
 }

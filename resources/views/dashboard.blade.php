@@ -10,21 +10,21 @@
                     </h2>
                     <ul class="list-disc pl-6 space-y-1 mb-6">
                         @foreach ($labelsJenis as $i => $jenis)
-                            @php
-                                $displayJenis = $jenis;
-                                if (strtolower($jenis) === 'motor') {
-                                    $displayJenis = 'Motorcycle';
-                                }
-                                if (strtolower($jenis) === 'mobil') {
-                                    $displayJenis = 'Car';
-                                }
-                            @endphp
-                            <li class="text-base text-neutral-600 dark:text-neutral-300 font-medium">
-                                {{ $displayJenis }}
-                                <span class="font-bold text-neutral-800 dark:text-white">
-                                    ({{ $dataJenis[$i] }} cases)
-                                </span>
-                            </li>
+                        @php
+                        $displayJenis = $jenis;
+                        if (strtolower($jenis) === 'motor') {
+                        $displayJenis = 'Motorcycle';
+                        }
+                        if (strtolower($jenis) === 'mobil') {
+                        $displayJenis = 'Car';
+                        }
+                        @endphp
+                        <li class="text-base text-neutral-600 dark:text-neutral-300 font-medium">
+                            {{ $displayJenis }}
+                            <span class="font-bold text-neutral-800 dark:text-white">
+                                ({{ $dataJenis[$i] }} cases)
+                            </span>
+                        </li>
                         @endforeach
                     </ul>
                     <h3 class="text-base font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test
@@ -37,15 +37,15 @@
             <!-- Latest Motorcycle Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <img src="{{ asset('storage/' . $latestMotor->image) }}" alt="Latest Motorcycle Violation"
+                <img src="{{ ('/storage/' . $latestMotor->image) }}" alt="Latest Motorcycle Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
                     <p class="font-semibold">
                         @php
-                            $label = $latestMotor->jenis_kendaraan;
-                            if (strtolower($label) === 'motor') {
-                                $label = 'Motorcycle';
-                            }
+                        $label = $latestMotor->jenis_kendaraan;
+                        if (strtolower($label) === 'motor') {
+                        $label = 'Motorcycle';
+                        }
                         @endphp
                         {{ $label }}
                     </p>
@@ -56,15 +56,15 @@
             <!-- Latest Car Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <img src="{{ asset('storage/' . $latestMobil->image) }}" alt="Latest Car Violation"
+                <img src="{{ ('/storage/' . $latestMobil->image) }}" alt="Latest Car Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
                     <p class="font-semibold">
                         @php
-                            $label = $latestMobil->jenis_kendaraan;
-                            if (strtolower($label) === 'mobil') {
-                                $label = 'Car';
-                            }
+                        $label = $latestMobil->jenis_kendaraan;
+                        if (strtolower($label) === 'mobil') {
+                        $label = 'Car';
+                        }
                         @endphp
                         {{ $label }}
                     </p>
@@ -115,16 +115,18 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Theme auto detection
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const labelColor = isDark ? '#fff' : '#222';
-            const gridColor = isDark ? '#334155' : '#e2e8f0';
+        // Theme auto detection
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const labelColor = isDark ? '#fff' : '#222';
+        const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+        const renderChart = () => {
 
             // ----- DONUT CHART (Jenis Kendaraan) -----
             const jenisList = document.getElementById('jenisList');
             const dataJenis = @json($dataJenis ?? []);
             const labelsJenisRaw = @json($labelsJenis ?? []);
+
             const labelsJenis = labelsJenisRaw.map(label => {
                 if (label.toLowerCase() === 'motor') return 'Motorcycle';
                 if (label.toLowerCase() === 'mobil') return 'Car';
@@ -311,6 +313,10 @@
 
             const chart = new ApexCharts(document.querySelector("#activity-chart"), options);
             chart.render();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChart();
         });
     </script>
 </x-layouts.app>

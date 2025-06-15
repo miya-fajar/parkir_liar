@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('pelanggaran', function (Blueprint $table) {
             $table->id();
-            $table->string('jenis_kendaraan');
-            $table->timestamp('waktu_pelanggaran');
+            $table->enum('jenis_kendaraan', ['mobil', 'motor']);
             $table->string('image')->nullable();
             $table->timestamps();
         });

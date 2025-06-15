@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Data;
+use App\Models\Pelanggaran;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -19,9 +19,9 @@ class CreateData implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public Data $data)
+    public function __construct(public Pelanggaran $pelanggaran)
     {
-        Log::info('CreateData broadcasted', ['data_id' => $data->id]);
+        Log::info('CreateData broadcasted', ['data_id' => $pelanggaran->id]);
     }
 
     /**

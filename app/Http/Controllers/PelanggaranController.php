@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Events\CreateData;
 use App\Models\Data;
+use App\Models\Pelanggaran;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class DataController extends Controller
+class PelanggaranController extends Controller
 {
     public function index() {}
 
@@ -16,7 +17,7 @@ class DataController extends Controller
     public function create(Request $request)
     {
         $validate = $request->validate([
-            "object_type" => ['required', Rule::in(["motor", "mobil"])],
+            "jenis_kendaraan" => ['required', Rule::in(["motor", "mobil"])],
             "image" => ['required', "image"],
         ]);
 
@@ -25,10 +26,9 @@ class DataController extends Controller
                 $image = $request->file('image');
                 $path = $image->store('images', 'public');
 
-                $data = new Data();
-                $data->object_type = $validate['object_type'];
-                $data->image_url = $path;
-                $data->location = "cemerlang";
+                $data = new Pelanggaran();
+                $data->jenis_kendaraan = $validate['jenis_kendaraan'];
+                $data->image = $path;
                 $data->save();
 
                 event(new CreateData($data));
