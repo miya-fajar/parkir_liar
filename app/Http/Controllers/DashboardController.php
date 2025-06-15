@@ -18,31 +18,44 @@ class DashboardController extends Controller
         $labelsJenis = $jenisCounts->pluck('jenis_kendaraan')->toArray();  // contoh: ['Motor', 'Mobil']
         $dataJenis   = $jenisCounts->pluck('total')->toArray();            // contoh: [120, 80]
 
-        // 2. Data untuk grafik 30 hari terakhir (jumlah pelanggaran per hari)
+                // 2. Data untuk grafik 30 hari terakhir (jumlah pelanggaran per hari)
         $startDate = Carbon::now()->subDays(29)->startOfDay();
         $endDate   = Carbon::now()->endOfDay();
-        // Ambil data jumlah pelanggaran per tanggal dalam rentang 30 hari terakhir
-        $dailyCounts = Pelanggaran::whereBetween('waktu_pelanggaran', [$startDate, $endDate])
-                        ->groupBy(DB::raw('DATE(waktu_pelanggaran)'))
-                        ->orderBy(DB::raw('DATE(waktu_pelanggaran)'))
-                        ->get([
-                            DB::raw('DATE(waktu_pelanggaran) as tanggal'),
-                            DB::raw('COUNT(*) as jumlah')
-                        ]);
 
-        // Siapkan array tanggal 30 hari terakhir dengan nilai awal 0
-        $countsByDate = [];
-        for ($i = 0; $i < 30; $i++) {
-            $date = Carbon::now()->subDays(29 - $i)->format('Y-m-d');
-            $countsByDate[$date] = 0;
-        }
-        // Isi array dengan data dari query (jika ada pelanggaran pada tanggal tsb)
-        foreach ($dailyCounts as $row) {
-            $countsByDate[$row->tanggal] = $row->jumlah;
-        }
-        // Pisahkan menjadi labels (tanggal) dan data (jumlah pelanggaran)
-        $labelsDates = array_keys($countsByDate);    // contoh: ['2025-05-15', '2025-05-16', ...]
-        $dataDates   = array_values($countsByDate);  // contoh: [5, 3, 0, 7, ...] (jumlah per hari)
+// Ambil list jenis kendaraan unik
+$jenisList = Pelanggaran::select('jenis_kendaraan')->distinct()->pluck('jenis_kendaraan')->toArray();
+
+// Siapkan array tanggal (labels)
+$labelsDates = [];
+for ($i = 0; $i < 30; $i++) {
+    $labelsDates[] = Carbon::now()->subDays(29 - $i)->format('Y-m-d');
+}
+
+// Inisialisasi data per jenis kendaraan
+$dataPerJenis = [];
+foreach ($jenisList as $jenis) {
+    $dataPerJenis[$jenis] = array_fill(0, 30, 0); // default 0
+}
+
+// Query jumlah per jenis per tanggal
+$dailyJenisCounts = Pelanggaran::select(
+        DB::raw('jenis_kendaraan'),
+        DB::raw('DATE(waktu_pelanggaran) as tanggal'),
+        DB::raw('COUNT(*) as jumlah')
+    )
+    ->whereBetween('waktu_pelanggaran', [$startDate, $endDate])
+    ->groupBy('jenis_kendaraan', DB::raw('DATE(waktu_pelanggaran)'))
+    ->get();
+
+// Isi array sesuai hasil query
+foreach ($dailyJenisCounts as $row) {
+    $jenis = $row->jenis_kendaraan;
+    $tanggal = $row->tanggal;
+    $index = array_search($tanggal, $labelsDates);
+    if ($index !== false) {
+        $dataPerJenis[$jenis][$index] = $row->jumlah;
+    }
+}
 
 
                 $latestMotor = Pelanggaran::where('jenis_kendaraan', 'Motor')
@@ -57,8 +70,8 @@ class DashboardController extends Controller
         return view('dashboard', [
             'labelsJenis' => $labelsJenis,
             'dataJenis'   => $dataJenis,
-            'labelsDates' => $labelsDates,
-            'dataDates'   => $dataDates,
+'labelsDates' => $labelsDates,
+    'dataPerJenis' => $dataPerJenis,
             'latestMotor' => $latestMotor,
             'latestMobil' => $latestMobil,
         ]);

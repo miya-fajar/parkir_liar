@@ -1,15 +1,16 @@
 <x-layouts.app :title="__('Dashboard')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <!-- Card Parking Violation Detection Test -->
             <div
                 class="relative aspect-video overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-lg bg-white dark:bg-neutral-900">
                 <div class="p-6 flex flex-col justify-center h-full">
-                    <h2 class="text-2xl font-extrabold mb-4 text-neutral-800 dark:text-white tracking-tight">Parking
-                        Violation Detection Test</h2>
+                    <h2 class="text-xl font-extrabold mb-4 text-neutral-800 dark:text-white tracking-tight">
+                        Parking Violation Detection Test
+                    </h2>
                     <ul class="list-disc pl-6 space-y-1 mb-6">
                         @foreach ($labelsJenis as $i => $jenis)
                             @php
-                                // Ubah label sesuai permintaan
                                 $displayJenis = $jenis;
                                 if (strtolower($jenis) === 'motor') {
                                     $displayJenis = 'Motorcycle';
@@ -26,23 +27,18 @@
                             </li>
                         @endforeach
                     </ul>
-
-                    <h3 class="text-lg font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test Location</h3>
-                    <p class="text-base text-neutral-600 dark:text-neutral-300 mb-4">Jl. Siliwangi, Pelabuhan Ratu,
-                        Sukabumi</p>
-                    <h3 class="text-lg font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test Hours</h3>
-                    <p class="text-base text-neutral-600 dark:text-neutral-300">09:00 AM - 08:00 PM <span
-                            class="font-medium">(WIB)</span></p>
+                    <h3 class="text-base font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test
+                        Location</h3>
+                    <p class="text-neutral-600 dark:text-neutral-300 mb-4">Jl. Siliwangi, Pelabuhan
+                        Ratu, Sukabumi</p>
                 </div>
             </div>
 
             <!-- Latest Motorcycle Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <!-- Latest Motorcycle Violation Image -->
                 <img src="{{ asset('storage/' . $latestMotor->image) }}" alt="Latest Motorcycle Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <!-- Violation info overlay -->
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
                     <p class="font-semibold">
                         @php
@@ -60,10 +56,8 @@
             <!-- Latest Car Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <!-- Latest Car Violation Image -->
                 <img src="{{ asset('storage/' . $latestMobil->image) }}" alt="Latest Car Violation"
                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <!-- Violation info overlay -->
                 <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
                     <p class="font-semibold">
                         @php
@@ -77,14 +71,12 @@
                     <p>{{ \Carbon\Carbon::parse($latestMobil->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
                 </div>
             </div>
-
         </div>
 
-        <!-- Chart Perbandingan Motor vs Mobil -->
+        <!-- Chart Perbandingan Motor vs Mobil & Violation Activity -->
         <div class="flex w-full flex-col gap-4">
-            <!-- Grid 2 kolom dengan proporsi 1/3 dan 2/3 -->
             <div class="grid gap-4 md:grid-cols-3">
-                <!-- Card Donut Chart Jenis Kendaraan (1/3 kolom) -->
+                <!-- Donut Chart Jenis Kendaraan -->
                 <div
                     class="relative aspect-video rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow bg-white dark:bg-neutral-900 md:col-span-1 flex items-center">
                     <div class="w-full rounded-xl shadow-sm p-4">
@@ -98,33 +90,50 @@
                         <div id="chartMotorMobil" class="mt-4"></div>
                         <div class="mt-6">
                             <ul id="jenisList" class="space-y-2">
-                                <!-- Detail jenis kendaraan akan diisi via JS -->
+                                <!-- Detail by JS -->
                             </ul>
                         </div>
                     </div>
                 </div>
-
-                <!-- Card Grafik Pelanggaran 30 Hari Terakhir (2/3 kolom) -->
+                <!-- Daily Violation Bar Chart -->
                 <div
-                    class="relative aspect-video rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow bg-white dark:bg-neutral-900 md:col-span-2 flex items-center">
-                    <div id="chartDaily" class="w-full h-full"></div>
+                    class="relative aspect-video rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow bg-white dark:bg-neutral-900 md:col-span-2 flex flex-col justify-between">
+                    <div class="mb-4 flex items-center justify-between px-6 pt-6">
+                        <div>
+                            <h3 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">
+                                {{ __('Violation Activity') }}
+                            </h3>
+                            <p class="text-sm md:text-base text-gray-500 dark:text-gray-400">
+                                {{ __('Violations detected over time') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div id="activity-chart" class="h-80 w-full px-4 pb-6"></div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- ApexCharts JS -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            // Donut chart dengan label otomatis putih jika dark
+            // Theme auto detection
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const labelColor = isDark ? '#fff' : '#222';
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+            // ----- DONUT CHART (Jenis Kendaraan) -----
+            const jenisList = document.getElementById('jenisList');
+            const dataJenis = @json($dataJenis ?? []);
+            const labelsJenisRaw = @json($labelsJenis ?? []);
+            const labelsJenis = labelsJenisRaw.map(label => {
+                if (label.toLowerCase() === 'motor') return 'Motorcycle';
+                if (label.toLowerCase() === 'mobil') return 'Car';
+                return label;
+            });
 
             const getDonutChartOptions = () => ({
-                series: @json($dataJenis),
-                labels: @json($labelsJenis),
+                series: dataJenis,
+                labels: labelsJenis,
                 colors: ["#6366f1", "#f59e42", "#10b981", "#f43f5e", "#64748b"],
                 chart: {
                     height: 320,
@@ -181,27 +190,127 @@
                     enabled: false
                 },
             });
-
             if (document.getElementById("chartMotorMobil") && typeof ApexCharts !== 'undefined') {
                 const chart = new ApexCharts(document.getElementById("chartMotorMobil"), getDonutChartOptions());
                 chart.render();
             }
 
-            // Konfigurasi Line/Bar Chart (Pelanggaran 30 Hari Terakhir)
-            var optionsLine = {
+            // ----- DAILY VIOLATION CHART -----
+            const labelsDates = @json($labelsDates ?? []);
+            const rawDataPerJenis = @json($dataPerJenis ?? []);
+            // Mapping label (motor/mobil) ke Bahasa Inggris
+            const typeLabels = Object.keys(rawDataPerJenis).map(label => {
+                if (label.toLowerCase() === 'motor') return 'Motorcycle';
+                if (label.toLowerCase() === 'mobil') return 'Car';
+                return label;
+            });
+            const typeSeries = Object.keys(rawDataPerJenis).map((label, idx) => ({
+                name: typeLabels[idx],
+                data: rawDataPerJenis[label]
+            }));
+
+            const options = {
+                series: typeSeries,
                 chart: {
-                    type: 'line'
-                }, // bisa diganti 'bar' jika ingin grafik batang
-                series: [{
-                    name: 'Pelanggaran',
-                    data: @json($dataDates) // data jumlah pelanggaran per hari (array angka)
-                }],
+                    type: 'bar',
+                    height: 320,
+                    stacked: true,
+                    toolbar: {
+                        show: true,
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        borderRadius: 5
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 2,
+                    colors: ['transparent']
+                },
                 xaxis: {
-                    categories: @json($labelsDates) // kategori sumbu-X: tanggal (array string "YYYY-MM-DD")
-                }
+                    categories: labelsDates,
+                    labels: {
+                        style: {
+                            colors: Array(labelsDates.length).fill(labelColor)
+                        }
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Number of Violations',
+                        style: {
+                            color: labelColor
+                        }
+                    },
+                    labels: {
+                        style: {
+                            colors: [labelColor]
+                        }
+                    }
+                },
+                fill: {
+                    opacity: 1,
+                    colors: ['#6366f1', '#f59e42', '#10b981', '#f43f5e',
+                        '#64748b'
+                    ] // Atur warna sesuai jumlah jenis
+                },
+                tooltip: {
+                    y: {
+                        formatter: val => val + " violations"
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        radius: 12
+                    },
+                    labels: {
+                        colors: labelColor
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: gridColor,
+                    strokeDashArray: 4,
+                    position: 'back'
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        legend: {
+                            position: 'bottom',
+                            offsetY: 0
+                        }
+                    }
+                }]
             };
-            var chartLine = new ApexCharts(document.querySelector("#chartDaily"), optionsLine);
-            chartLine.render();
+
+            const chart = new ApexCharts(document.querySelector("#activity-chart"), options);
+            chart.render();
         });
     </script>
 </x-layouts.app>
