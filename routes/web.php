@@ -5,6 +5,8 @@ use Livewire\Volt\Volt;
 use Illuminate\Http\Request;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\MotorcycleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,10 +15,10 @@ Route::get('/', function () {
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
-Route::view('car', 'car')
+Route::get('car', [CarController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('car');
-Route::view('motorcycle', 'motorcycle')
+Route::get('motorcycle', [MotorcycleController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('motorcycle');
 
