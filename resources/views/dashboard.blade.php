@@ -116,23 +116,23 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @vite('resources/js/app.js')
     <script>
-        const jenisList = document.getElementById('jenisList');
-        let dataJenis = @json($dataJenis ?? []);
-        const labelsJenisRaw = @json($labelsJenis ?? []);
-        let donutChart = null;
+        window.chartRender = window.chartRender || (() => {
+            // Theme auto detection
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const labelColor = isDark ? '#fff' : '#222';
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
 
-        const getLabelColor = () =>
-            window.matchMedia('(prefers-color-scheme: dark)').matches ? '#fff' : '#222';
-
-        const getDonutChartOptions = () => {
-            const labelColor = getLabelColor();
+            // ----- DONUT CHART (Jenis Kendaraan) -----
+            const jenisList = document.getElementById('jenisList');
+            const dataJenis = @json($dataJenis ?? []);
+            const labelsJenisRaw = @json($labelsJenis ?? []);
             const labelsJenis = labelsJenisRaw.map(label => {
                 if (label.toLowerCase() === 'motor') return 'Motorcycle';
                 if (label.toLowerCase() === 'mobil') return 'Car';
                 return label;
             });
 
-            return {
+            const getDonutChartOptions = () => ({
                 series: dataJenis,
                 labels: labelsJenis,
                 colors: ["#6366f1", "#f59e42", "#10b981", "#f43f5e", "#64748b"],
@@ -190,36 +190,136 @@
                 dataLabels: {
                     enabled: false
                 },
+            });
+            if (document.getElementById("chartMotorMobil") && typeof ApexCharts !== 'undefined') {
+                const chart = new ApexCharts(document.getElementById("chartMotorMobil"), getDonutChartOptions());
+                chart.render();
+            }
+
+            // ----- DAILY VIOLATION CHART -----
+            const labelsDates = @json($labelsDates ?? []);
+            const rawDataPerJenis = @json($dataPerJenis ?? []);
+            // Mapping label (motor/mobil) ke Bahasa Inggris
+            const typeLabels = Object.keys(rawDataPerJenis).map(label => {
+                if (label.toLowerCase() === 'motor') return 'Motorcycle';
+                if (label.toLowerCase() === 'mobil') return 'Car';
+                return label;
+            });
+            const typeSeries = Object.keys(rawDataPerJenis).map((label, idx) => ({
+                name: typeLabels[idx],
+                data: rawDataPerJenis[label]
+            }));
+
+            const options = {
+                series: typeSeries,
+                chart: {
+                    type: 'bar',
+                    height: 320,
+                    stacked: true,
+                    toolbar: {
+                        show: true,
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        borderRadius: 5
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: labelsDates,
+                    labels: {
+                        style: {
+                            colors: Array(labelsDates.length).fill(labelColor)
+                        }
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Number of Violations',
+                        style: {
+                            color: labelColor
+                        }
+                    },
+                    labels: {
+                        style: {
+                            colors: [labelColor]
+                        }
+                    }
+                },
+                fill: {
+                    opacity: 1,
+                    colors: ['#6366f1', '#f59e42', '#10b981', '#f43f5e',
+                        '#64748b'
+                    ] // Atur warna sesuai jumlah jenis
+                },
+                tooltip: {
+                    y: {
+                        formatter: val => val + " violations"
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        radius: 12
+                    },
+                    labels: {
+                        colors: labelColor
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: gridColor,
+                    strokeDashArray: 4,
+                    position: 'back'
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        legend: {
+                            position: 'bottom',
+                            offsetY: 0
+                        }
+                    }
+                }]
             };
-        };
 
-        const renderChart = () => {
-            const chartContainer = document.getElementById("chartMotorMobil");
-            if (chartContainer && typeof ApexCharts !== 'undefined') {
-                donutChart = new ApexCharts(chartContainer, getDonutChartOptions());
-                donutChart.render();
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderChart();
-
-            // Real-time update via Echo
-            if (typeof window.Echo !== 'undefined') {
-                window.Echo.channel("dashboard").listen(".data.created", (e) => {
-                    if (e.jenis_kendaraan === 'motor') {
-                        dataJenis[0]++;
-                    } else if (e.jenis_kendaraan === 'mobil') {
-                        dataJenis[1]++;
-                    }
-
-                    if (donutChart) {
-                        donutChart.updateSeries([...dataJenis]); // important: update series dynamically
-                    }
-                });
-            } else {
-                console.warn("Echo is not defined");
-            }
+            const chart = new ApexCharts(document.querySelector("#activity-chart"), options);
+            chart.render();
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            window.Echo.channel("dashboard").listen(".data.created", (e) => {
+                console.log(e);
+            });
+        });
+
+        document.addEventListener("load", window.chartRender());
     </script>
 </x-layouts.app>
