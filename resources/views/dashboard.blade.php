@@ -215,6 +215,7 @@
                 chart: {
                     type: 'bar',
                     height: 320,
+                    width: "100%",
                     stacked: true,
                     toolbar: {
                         show: true,
