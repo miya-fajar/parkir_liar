@@ -18,7 +18,7 @@ class PelanggaranSeeder extends Seeder
         for ($i = 1; $i <= 100; $i++) {
             DB::table('pelanggaran')->insert([
                 'jenis_kendaraan'   => $kendaraan[array_rand($kendaraan)],
-                'image'             => 'uploads/dummy_' . Str::random(6) . '.jpg',
+                'image'             => 'images/dummy_' . Str::random(6) . '.jpg',
                 'created_at'        => Carbon::now()->subDays(rand(0, 30))->format('Y-m-d H:i:s'),
                 'updated_at'        => now(),
             ]);

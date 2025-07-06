@@ -23,7 +23,7 @@
                                 @endphp
                                 {{ $label }}
                             </p>
-                            <p>{{ \Carbon\Carbon::parse($violation->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
+                            <p>{{ \Carbon\Carbon::parse($violation->created_at)->format('M d, Y H:i') }}</p>
                         </div>
                     </div>
                 @endforeach

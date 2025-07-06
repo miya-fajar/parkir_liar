@@ -29,48 +29,51 @@
                     </ul>
                     <h3 class="text-base font-semibold mb-2 text-neutral-700 dark:text-neutral-200">Test
                         Location</h3>
-                    <p class="text-neutral-600 dark:text-neutral-300 mb-4">Jl. Siliwangi, Pelabuhan
-                        Ratu, Sukabumi</p>
+                    <p class="text-neutral-600 dark:text-neutral-300 mb-4"> Sukabumi</p>
                 </div>
             </div>
 
             <!-- Latest Motorcycle Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <img src="{{ '/storage/' . $latestMotor->image }}" alt="Latest Motorcycle Violation"
-                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
-                    <p class="font-semibold">
-                        @php
-                            $label = $latestMotor->jenis_kendaraan;
-                            if (strtolower($label) === 'motor') {
-                                $label = 'Motorcycle';
-                            }
-                        @endphp
-                        {{ $label }}
-                    </p>
-                    <p>{{ \Carbon\Carbon::parse($latestMotor->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
-                </div>
+                @if ($latestMotor && $latestMotor->image)
+                    <img src="{{ '/storage/' . $latestMotor->image }}" alt="Latest Motorcycle Violation"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
+                    <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
+                        <p class="font-semibold">
+                            @php
+                                $label = $latestMotor->jenis_kendaraan;
+                                if (strtolower($label) === 'motor') {
+                                    $label = 'Motorcycle';
+                                }
+                            @endphp
+                            {{ $label }}
+                        </p>
+                        <p>{{ \Carbon\Carbon::parse($latestMotor->created_at)->format('M d, Y H:i') }}</p>
+                    </div>
+                @endif
             </div>
 
             <!-- Latest Car Violation Card -->
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 group">
-                <img src="{{ '/storage/' . $latestMobil->image }}" alt="Latest Car Violation"
-                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
-                <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
-                    <p class="font-semibold">
-                        @php
-                            $label = $latestMobil->jenis_kendaraan;
-                            if (strtolower($label) === 'mobil') {
-                                $label = 'Car';
-                            }
-                        @endphp
-                        {{ $label }}
-                    </p>
-                    <p>{{ \Carbon\Carbon::parse($latestMobil->waktu_pelanggaran)->format('M d, Y H:i') }}</p>
-                </div>
+                @if ($latestMobil && $latestMobil->image)
+                    <img src="{{ '/storage/' . $latestMobil->image }}" alt="Latest Car Violation"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105">
+                    <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
+                        <p class="font-semibold">
+                            @php
+                                $label = $latestMobil->jenis_kendaraan;
+                                if (strtolower($label) === 'mobil') {
+                                    $label = 'Car';
+                                }
+                            @endphp
+                            {{ $label }}
+                        </p>
+                        <p>{{ \Carbon\Carbon::parse($latestMobil->created_at)->format('M d, Y H:i') }}</p>
+                    </div>
             </div>
+            @endif
         </div>
 
         <!-- Chart Perbandingan Motor vs Mobil & Violation Activity -->
@@ -275,7 +278,7 @@
                     colors: ['#635bff', '#fb923c']
                 },
                 tooltip: {
-                    theme: isDark && "dark" , // Aktifkan tema dark
+                    theme: isDark && "dark", // Aktifkan tema dark
                     y: {
                         formatter: val => val + " violations"
                     },
