@@ -10,20 +10,29 @@
                         <img src="{{ asset('storage/' . $violation->image) }}" alt="Motorcycle Violation"
                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105" />
                         <!-- Info overlay -->
-                        <div class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm">
-                            <p class="font-semibold">
-                                @php
-                                    $label = $violation->jenis_kendaraan;
-                                    if (strtolower($label) === 'motor') {
-                                        $label = 'Motorcycle';
-                                    }
-                                    if (strtolower($label) === 'mobil') {
-                                        $label = 'Car';
-                                    }
-                                @endphp
-                                {{ $label }}
-                            </p>
-                            <p>{{ \Carbon\Carbon::parse($violation->created_at)->format('M d, Y H:i') }}</p>
+                        <div
+                            class="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-2 text-sm flex items-center justify-between gap-2">
+                            <div>
+                                <p class="font-semibold">
+                                    @php
+                                        $label = $violation->jenis_kendaraan;
+                                        if (strtolower($label) === 'motor') {
+                                            $label = 'Motorcycle';
+                                        }
+                                        if (strtolower($label) === 'mobil') {
+                                            $label = 'Car';
+                                        }
+                                    @endphp
+                                    {{ $label }}
+                                </p>
+                                <p>{{ \Carbon\Carbon::parse($violation->created_at)->format('M d, Y H:i') }}</p>
+                            </div>
+                            <!-- Download Button -->
+                            <a href="{{ asset('storage/' . $violation->image) }}" download
+                                class="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                                title="Download image">
+                                Download 
+                            </a>
                         </div>
                     </div>
                 @endforeach

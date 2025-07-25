@@ -8,18 +8,20 @@ use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\MotorcycleController;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
+
+Route::redirect('/', '/dashboard');
 
 Route::get('dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    // ->middleware(['auth', 'verified'])
     ->name('dashboard');
 Route::get('car', [CarController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    // ->middleware(['auth', 'verified'])
     ->name('car');
 Route::get('motorcycle', [MotorcycleController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    // ->middleware(['auth', 'verified'])
     ->name('motorcycle');
 
 Route::middleware(['auth'])->group(function () {
